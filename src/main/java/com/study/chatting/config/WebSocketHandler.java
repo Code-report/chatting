@@ -16,28 +16,40 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private List<WebSocketSession> sessions = new ArrayList<>();
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        sessions.add(session);
-        log.info("접속: {}", session);
+    public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
+//        TODO 대용량 요청 일 경우, sessions 는 ArrayList<>()보다 Map 이 효율적이지 않는가 ?
+//        TimeMeter timeMeter = new TimeMeter();
+//        timeMeter.setStartTime(System.currentTimeMillis());
+
+        sessions.add(webSocketSession);
+        log.info("접속 : {}", webSocketSession);
+
+//        timeMeter.setEndTime(System.currentTimeMillis());
+//        log.info("diff = {}", timeMeter.getDiff());
     }
 
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        sessions.remove(session);
-        log.info("퇴장: {}", session);
-    }
+//    @Override
+//    public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> message) throws Exception {
+//        log.info("메세지 : {}", message);
+//    }
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        log.info("메세지 전송 = {} : {}", session, message.getPayload());
-        for(WebSocketSession sess : sessions){
-            TextMessage msg = new TextMessage(message.getPayload());
-            sess.sendMessage(msg);
+    protected void handleTextMessage(WebSocketSession webSocketSession, TextMessage textMessage) throws Exception {
+        log.info("메세지 : {}", textMessage);
+        for(WebSocketSession socketSession: sessions){
+            TextMessage  message = new TextMessage(textMessage.getPayload());
+            socketSession.sendMessage(message);
         }
-//        String payload = message.getPayload();
-//        log.info("payload : {}", payload);
-//
-//        TextMessage initialGreeting = new TextMessage("Code-Report 채팅 서버에 오신 것을 환영합니다!");
-//        session.sendMessage(initialGreeting);
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus status) throws Exception {
+        sessions.remove(webSocketSession);
+        log.info("종료 : {}", webSocketSession);
+        /**
+         *
+         * TODO CloseStatus 에 따른 세션 유지 / 종료 코드
+         *
+         */
     }
 }
