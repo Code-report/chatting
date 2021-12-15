@@ -1,0 +1,10 @@
+spring:
+  thymeleaf:
+    cache: false
+    prefix: file:src/main/resources/templates/
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: myGroupD
+
